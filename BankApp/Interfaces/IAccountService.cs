@@ -4,6 +4,6 @@ namespace BankApp.Interfaces
 {
     public interface IAccountService
     {
-        int GetBalance(Account userAccount);
+        int GetBalance(IAccount userAccount);
     }
 }

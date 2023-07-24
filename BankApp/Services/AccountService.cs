@@ -11,16 +11,14 @@ namespace BankApp.Services
 		{
 		}
 
-        public int GetBalance(Account userAccount)
+        public int GetBalance(IAccount userAccount)
         {
-            if (userAccount == null)
+            if (userAccount != null)
             {
-                // Handle the case when the account is null (you can throw an exception or return a default balance)
-                // For example, you can throw an InvalidOperationException or return a default balance of 0.
-                throw new InvalidOperationException("Account cannot be null.");
+                return 0;
             }
-            throw new NotImplementedException();
+
+            throw new InvalidOperationException("Account cannot be null.");
         }
     }
 }
-

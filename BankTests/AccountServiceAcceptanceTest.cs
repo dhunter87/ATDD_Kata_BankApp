@@ -25,12 +25,14 @@ namespace BankTests
         private Mock<IAccountRepository> _mockAccountRepository;
         private IAccountService? _accountService;
         private IClientService? _clientService;
-        private Account? _userAccount;
+        //private IAccount? _userAccount;
+        private Mock<IAccount> _mockUserAccount;
 
         public int Balance { get; set; }
 
         public AccountServiceAcceptanceTest()
         {
+            _mockUserAccount = new Mock<IAccount>();
             _mockClientRepository = new Mock<IClientRepository>();
             _mockAccountRepository = new Mock<IAccountRepository>();
 
@@ -47,11 +49,20 @@ namespace BankTests
         }
 
         [Test]
-        public void AcceptanceTestOne()
+        public void NewAccountZeroBalance()
         {
             this.Given((s) => s.AClientOpensANewAccount())
                 .When(s => s.TheClientViewsTheirBalance())
-                .Then(s => s.TheClientShouldHaveAnAccountBalanceOfZero())
+                .Then(s => s.TheClientShouldHaveAnAccountBalanceOf(0))
+                .BDDfy();
+        }
+
+        [Test]
+        public void ExistingAccountWithBalanceOf1000()
+        {
+            this.Given((s) => s.AClientHasAnAccountWithBalanceOf1000())
+                .When(s => s.TheClientViewsTheirBalance())
+                .Then(s => s.TheClientShouldHaveAnAccountBalanceOf(1000))
                 .BDDfy();
         }
 
@@ -60,8 +71,27 @@ namespace BankTests
             var name = "";
             var dateOfBirth = "";
             var password = "";
+            var accountType = "";
 
-            _userAccount = _clientService?.OpenAccount(name, dateOfBirth, password);
+            if (_clientService != null)
+            {
+                _userAccount = _clientService.OpenAccount(name, dateOfBirth, password, accountType);
+                return;
+            }
+            Assert.Fail();
+        }
+
+        private void AClientHasAnAccountWithBalanceOf1000()
+        {
+            var userName = "";
+            var password = "";
+
+            if (_clientService != null)
+            {
+                _userAccount = _clientService.GetExistingAccount(userName, password);
+                return;
+            }
+            Assert.Fail();
         }
 
         private void TheClientViewsTheirBalance()
@@ -69,12 +99,14 @@ namespace BankTests
             if (_userAccount != null && _accountService != null)
             {
                 Balance = _accountService.GetBalance(_userAccount);
+                return;
             }
+            Assert.Fail();
         }
 
-        private void TheClientShouldHaveAnAccountBalanceOfZero()
+        private void TheClientShouldHaveAnAccountBalanceOf(int expectedBalance)
         {
-            Assert.That(Balance, Is.EqualTo(0));
+            Assert.That(Balance, Is.EqualTo(expectedBalance));
         }
     }
 }

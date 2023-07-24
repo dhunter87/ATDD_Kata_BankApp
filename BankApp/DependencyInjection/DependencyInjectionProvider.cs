@@ -1,4 +1,5 @@
-﻿using BankApp.SampleBoundary;
+﻿using BankApp.Boundaries;
+using BankApp.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BankApp.DependencyInjection
@@ -23,7 +24,7 @@ namespace BankApp.DependencyInjection
         private static void ConfigureServices(IServiceCollection serviceCollection)
         {
             // put all your real applications registrations here
-            serviceCollection.AddTransient<IBoundary, ConcreteBoundary>();
+            serviceCollection.AddTransient<IClientRepository, ClientRepository>();
         }
     }
 }

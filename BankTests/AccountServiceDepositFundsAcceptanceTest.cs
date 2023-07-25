@@ -11,6 +11,7 @@ using BankApp.Models;
 using BankApp.Services;
 using System.Xml.Linq;
 using BankTests.Constants;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BankTests
 {
@@ -19,38 +20,8 @@ namespace BankTests
            IWant = "to be able to deposit my money",
            SoThat = "I can store my money safely when I am not using it")]
 
-    public class AccountServiceAcceptanceTest
+    public class AccountServiceAcceptanceTest : AcceptanceTestBase
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        private Mock<IClientRepository> _mockClientRepository;
-        private Mock<IAccountRepository> _mockAccountRepository;
-        private IAccountService? _accountService;
-        private IClientService? _clientService;
-        private IAccount? _userAccount;
-        private Mock<IAccount> _mockUserAccount;
-
-        public int Balance { get; set; }
-
-        public AccountServiceAcceptanceTest()
-        {
-            _mockUserAccount = new Mock<IAccount>();
-            _mockClientRepository = new Mock<IClientRepository>();
-            _mockAccountRepository = new Mock<IAccountRepository>();
-
-            _serviceProvider = DependencyInjectionProvider.Setup(sc =>
-            {
-                sc.AddTransient<IClientRepository>(_ => _mockClientRepository.Object);
-                sc.AddTransient<IAccountRepository>(_ => _mockAccountRepository.Object);
-                sc.AddTransient<IAccountService, AccountService>();
-                sc.AddTransient<IClientService, ClientService>();
-            });
-
-            _clientService = _serviceProvider.GetService<IClientService>()!;
-            _accountService = _serviceProvider.GetService<IAccountService>()!;
-
-        }
-
         [Test]
         public void NewAccountDepositOf100GivesBalanceOf1000()
         {
@@ -78,62 +49,61 @@ namespace BankTests
                 .BDDfy();
         }
 
-        private void AClientOpensANewAccount()
+        [Test]
+        public void NewAccountDepositOf500GAndDepositOf200GivesBalanceOf700()
         {
-            if (_clientService != null)
-            {
-                _clientService.OpenAccount(
-                    TestConstants.FirstName,
-                    TestConstants.MiddleName,
-                    TestConstants.SirName,
-                    TestConstants.Email,
-                    TestConstants.DateOfBirth,
-                    TestConstants.Password,
-                    TestConstants.AccountType);
-
-                _userAccount = _clientService.GetExistingAccount(TestConstants.UserName, TestConstants.Password);
-                return;
-            }
-            Assert.Fail();
+            this.Given((s) => s.AClientOpensANewAccount())
+                .When(s => s.TheClientMakesADepositOf(500, 0))
+                .And(s => s.TheClientMakesADepositOf(200, 500))
+                .Then(s => s.TheClientShouldHaveAnAccountBalanceOf(700))
+                .BDDfy();
         }
 
-        private void AClientHasAnAccountWithBalanceOf(int startingBalance)
+        [Test]
+        public void NewAccountDepositOfDecmalValueGivesBalanceOfDecimalValue()
         {
-            _mockAccountRepository.Setup(ar => ar.GetBalance(It.IsAny<IAccount>())).Returns(startingBalance);
-
-            if (_clientService != null &&
-                _accountService != null)
-            {
-                _userAccount = _clientService.GetExistingAccount(TestConstants.UserName, TestConstants.Password);
-
-                if (_userAccount != null)
-                {
-                    Balance = _accountService.GetBalance(_userAccount);
-                }
-            }
-
-            Assert.That(Balance, Is.EqualTo(startingBalance));
+            this.Given((s) => s.AClientOpensANewAccount())
+                .When(s => s.TheClientMakesADepositOf(0.5, 0))
+                .Then(s => s.TheClientShouldHaveAnAccountBalanceOf(0.5))
+                .BDDfy();
         }
 
-        private void TheClientMakesADepositOf(int balanceToDeposit, int startingBalance)
+        [Test]
+        public void NewAccountDepositOfover2BillionGivesBalanceOfOver2Billion()
         {
-            if (_accountService != null)
-            {
-                _accountService.DepositFunds(_userAccount, balanceToDeposit);
-                _mockAccountRepository.Setup(mr => mr.GetBalance(It.Is<IAccount>(a => a == _userAccount))).Returns(startingBalance + balanceToDeposit);
-            }
+            this.Given((s) => s.AClientOpensANewAccount())
+                .When(s => s.TheClientMakesADepositOf(2150000000, 0))
+                .Then(s => s.TheClientShouldHaveAnAccountBalanceOf(2150000000))
+                .BDDfy();
         }
 
-        private void TheClientShouldHaveAnAccountBalanceOf(int expectedBalance)
+        [Test]
+        public void NewAccountDepositOfover2BillionGivesBalanceOfOver2Million()
         {
-            if (_userAccount != null && _accountService != null)
-            {
-                Balance = _accountService.GetBalance(_userAccount);
-                Assert.That(Balance, Is.EqualTo(expectedBalance));
-                return;
-            }
+            this.Given((s) => s.AClientOpensANewAccount())
+                .When(s => s.TheClientMakesADepositOf(3000000001, 0))
+                .Then(s => s.TheDepositShouldBeRejected(3000000000))
+                .And(s => s.TheClientShouldBeToldDepostExceedsMaximumAccountBalance(3000000000))
+                .BDDfy();
+        }
 
-            Assert.Fail();
+        private void TheClientShouldBeToldDepostExceedsMaximumAccountBalance(double v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void TheDepositShouldBeRejected(double v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void TheClientMakesADepositOf(double balanceToDeposit, double startingBalance)
+        {
+            if (BankAccountService != null)
+            {
+                BankAccountService.DepositFunds(UserAccount, balanceToDeposit);
+                MockAccountRepository.Setup(mr => mr.GetBalance(It.Is<IAccount>(a => a == UserAccount))).Returns(startingBalance + balanceToDeposit);
+            }
         }
     }
 }

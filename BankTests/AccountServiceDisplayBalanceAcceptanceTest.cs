@@ -18,48 +18,8 @@ namespace BankTests
            IWant = "to be able to view my account balance",
            SoThat = "I can know how much money is in my account")]
 
-    public class AccountServiceDisplayBalanceAcceptanceTest
+    public class AccountServiceDisplayBalanceAcceptanceTest : AcceptanceTestBase
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        private Mock<IClientRepository> _mockClientRepository;
-        private Mock<IAccountRepository> _mockAccountRepository;
-
-        private IAccountService? _accountService;
-        private IClientService? _clientService;
-        private IAccount? _userAccount;
-
-        public int Balance { get; set; }
-
-        public AccountServiceDisplayBalanceAcceptanceTest()
-        {
-            _mockClientRepository = new Mock<IClientRepository>();
-            _mockAccountRepository = new Mock<IAccountRepository>();
-
-            _serviceProvider = DependencyInjectionProvider.Setup(sc =>
-            {
-                sc.AddTransient<IClientRepository>(_ => _mockClientRepository.Object);
-                sc.AddTransient<IAccountRepository>(_ => _mockAccountRepository.Object);
-                sc.AddTransient<IAccountService, AccountService>();
-                sc.AddTransient<IClientService, ClientService>();
-            });
-
-            _clientService = _serviceProvider.GetService<IClientService>()!;
-            _accountService = _serviceProvider.GetService<IAccountService>()!;
-
-            var testAccount = new Account(
-                TestConstants.FirstName,
-                TestConstants.MiddleName,
-                TestConstants.SirName,
-                TestConstants.Email,
-                TestConstants.DateOfBirth,
-                TestConstants.Password,
-                TestConstants.AccountType);
-
-            _mockClientRepository.Setup(cr => cr.GetAccount(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(testAccount);
-        }
-
         [Test]
         public void NewAccountZeroBalance()
         {
@@ -78,59 +38,14 @@ namespace BankTests
                 .BDDfy();
         }
 
-        private void AClientOpensANewAccount()
+        private double TheClientViewsTheirBalance(double mockGetBalanceValue)
         {
-            if (_clientService != null)
+            if (BankClientService != null && UserAccount != null && BankAccountService != null)
             {
-                _clientService.OpenAccount(
-                    TestConstants.FirstName,
-                    TestConstants.MiddleName,
-                    TestConstants.SirName,
-                    TestConstants.Email,
-                    TestConstants.DateOfBirth,
-                    TestConstants.Password,
-                    TestConstants.AccountType);
-
-                _userAccount = _clientService.GetExistingAccount(TestConstants.UserName, TestConstants.Password);
-
-                return;
-            }
-            Assert.Fail();
-        }
-
-        private void AClientHasAnAccountWithBalanceOf(int startingBalance)
-        {
-            _mockAccountRepository.Setup(ar => ar.GetBalance(It.IsAny<IAccount>())).Returns(startingBalance);
-
-            if (_clientService != null &&
-                _accountService != null)
-            {
-                _userAccount = _clientService.GetExistingAccount(TestConstants.UserName, TestConstants.Password);
-
-                if (_userAccount != null)
-                {
-                    Balance = _accountService.GetBalance(_userAccount);
-                }
+                return BankAccountService.GetBalance(UserAccount);
             }
 
-            Assert.That(Balance, Is.EqualTo(startingBalance));
-        }
-
-        private void TheClientViewsTheirBalance(int mockGetBalanceValue)
-        {
-            _mockAccountRepository.Setup(mr => mr.GetBalance(It.IsAny<IAccount>())).Returns(mockGetBalanceValue);
-
-            if (_userAccount != null && _accountService != null)
-            {
-                Balance = _accountService.GetBalance(_userAccount);
-                return;
-            }
-            Assert.Fail();
-        }
-
-        private void TheClientShouldHaveAnAccountBalanceOf(int expectedBalance)
-        {
-            Assert.That(Balance, Is.EqualTo(expectedBalance));
+            return 0;
         }
     }
 }

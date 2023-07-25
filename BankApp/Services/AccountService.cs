@@ -14,7 +14,7 @@ namespace BankApp.Services
             _accountRepository = repository;
 		}
 
-        public int DepositFunds(IAccount? userAccount, int balanceToDeposit)
+        public double DepositFunds(IAccount? userAccount, double balanceToDeposit)
         {
             if (userAccount != null)
             {
@@ -24,7 +24,7 @@ namespace BankApp.Services
             return -1;
         }
 
-        public int GetBalance(IAccount userAccount)
+        public double GetBalance(IAccount userAccount)
         { 
             if (userAccount != null)
             {

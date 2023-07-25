@@ -3,7 +3,7 @@ namespace BankApp.Interfaces
 {
     public interface IAccountRepository
     {
-        int DepositFunds(IAccount userAccount);
-        int GetBalance(IAccount userAccount);
+        double DepositFunds(IAccount userAccount);
+        double GetBalance(IAccount userAccount);
     }
 }

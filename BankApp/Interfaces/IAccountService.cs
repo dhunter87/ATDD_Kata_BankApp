@@ -4,7 +4,7 @@ namespace BankApp.Interfaces
 {
     public interface IAccountService
     {
-        int DepositFunds(IAccount? userAccount, int balanceToDeposit);
-        int GetBalance(IAccount userAccount);
+        double DepositFunds(IAccount? userAccount, double balanceToDeposit);
+        double GetBalance(IAccount userAccount);
     }
 }

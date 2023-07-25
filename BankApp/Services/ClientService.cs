@@ -7,7 +7,6 @@ namespace BankApp.Services
 {
 	public class ClientService : IClientService
     {
-        private IAccount? Account { get; set; }
         private IClientRepository ClientRepository;
 
 		public ClientService(IClientRepository clientRepository)
@@ -19,14 +18,14 @@ namespace BankApp.Services
         {
             var accountType = "Current";
 
-            Account = ClientRepository.GetAccount(accountType, userName, password);
-            return Account;
+            var account = ClientRepository.GetAccount(accountType, userName, password);
+            return account;
         }
 
         public void OpenAccount(string firstname, string middleName, string sirname, string email, string dob, string password, string accountType)
         {
-            Account = new Account(firstname, middleName, sirname, email, dob, password, accountType);
-            ClientRepository.CreateAccount(Account);
+            var account = new Account(firstname, middleName, sirname, email, dob, password, accountType);
+            ClientRepository.CreateAccount(account);
         }
     }
 }

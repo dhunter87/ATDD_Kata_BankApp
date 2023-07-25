@@ -6,7 +6,7 @@ namespace BankApp.DependencyInjection
 {
     public static class DependencyInjectionProvider
     {
-        public static IServiceProvider Setup(Action<IServiceCollection> overrides)
+        public static IServiceProvider Setup(Action<IServiceCollection>? overrides)
         {
             var serviceCollection = new ServiceCollection();
 

@@ -6,6 +6,6 @@ namespace BankApp.Interfaces
     public interface IClientService
     {
         IAccount? GetExistingAccount(string userName, string password);
-        IAccount OpenAccount(string name, string dob, string password, string accountType);
+        void OpenAccount(string firstname, string middleName, string sirname, string email, string dob, string password, string accountType);
     }
 }

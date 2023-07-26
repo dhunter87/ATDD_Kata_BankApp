@@ -9,7 +9,7 @@ namespace BankApp.Boundaries
 		{
 		}
 
-        public double DepositFunds(IAccount userAccount)
+        public double DepositFunds(IAccount userAccount, double amountToDeposit)
         {
             throw new NotImplementedException();
         }
@@ -17,6 +17,6 @@ namespace BankApp.Boundaries
         public double GetBalance(IAccount userAccount)
         {
             throw new NotImplementedException();
-        }
+        }   
     }
 }

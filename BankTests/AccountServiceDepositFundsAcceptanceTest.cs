@@ -14,7 +14,7 @@ using BankTests.Constants;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BankTests
-{
+{ 
     [TestFixture]
     [Story(AsA = "a client of the bank",
            IWant = "to be able to deposit my money",
@@ -22,6 +22,8 @@ namespace BankTests
 
     public class AccountServiceAcceptanceTest : AcceptanceTestBase
     {
+        private ArgumentException? ScenarioException;
+
         [Test]
         public void NewAccountDepositOf100GivesBalanceOf1000()
         {
@@ -87,14 +89,22 @@ namespace BankTests
                 .BDDfy();
         }
 
-        private void TheClientShouldBeToldDepostExceedsMaximumAccountBalance(double v)
+        private void TheDepositShouldBeRejected(double amountToDeposit)
         {
-            throw new NotImplementedException();
+            var threeBillionAndOne = 3000000001;
+            if (UserAccount != null && BankAccountService != null)
+            {
+                ScenarioException = Assert.Throws<ArgumentException>(() => BankAccountService.DepositFunds(UserAccount, threeBillionAndOne));
+            }
         }
 
-        private void TheDepositShouldBeRejected(double v)
+        private void TheClientShouldBeToldDepostExceedsMaximumAccountBalance(double v)
         {
-            throw new NotImplementedException();
+            if (ScenarioException != null)
+            {
+                Assert.That(ScenarioException.Message, Is.EqualTo("Some error happened"));
+            }
+            Assert.Fail();
         }
 
         private void TheClientMakesADepositOf(double balanceToDeposit, double startingBalance)

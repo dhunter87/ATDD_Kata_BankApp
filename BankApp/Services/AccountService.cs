@@ -19,13 +19,13 @@ namespace BankApp.Services
             if (userAccount != null)
             {
                 return 0;
-                //return _accountRepository.DepositFunds(userAccount);
+                //return _accountRepository.DepositFunds(userAccount, balanceToDeposit);
             }
-            return -1;
+            throw new ArgumentException();
         }
 
         public double GetBalance(IAccount userAccount)
-        { 
+        {
             if (userAccount != null)
             {
                 try

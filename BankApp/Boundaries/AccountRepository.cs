@@ -17,6 +17,11 @@ namespace BankApp.Boundaries
         public double GetBalance(IAccount userAccount)
         {
             throw new NotImplementedException();
-        }   
+        }
+
+        public double WithdrawFunds(IAccount userAccount, object balanceToDeposit)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -18,8 +18,7 @@ namespace BankApp.Services
         {
             if (userAccount != null)
             {
-                return 0;
-                //return _accountRepository.DepositFunds(userAccount, balanceToDeposit);
+                return _accountRepository.DepositFunds(userAccount, balanceToDeposit);
             }
             throw new ArgumentException();
         }
@@ -40,6 +39,15 @@ namespace BankApp.Services
             }
 
             throw new InvalidOperationException("Account cannot be null.");
+        }
+
+        public double WithdrawFunds(IAccount? userAccount, double balanceToWithdraw)
+        {
+            if (userAccount != null)
+            {
+                return _accountRepository.WithdrawFunds(userAccount, balanceToWithdraw);
+            }
+            throw new ArgumentException();
         }
     }
 }

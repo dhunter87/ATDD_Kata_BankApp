@@ -7,9 +7,9 @@ namespace BankApp.Models
     {
 		// todo replace with account type object
 		private readonly string AccountType;
-		private readonly string AccountId;
+		private readonly Guid AccountId;
         private readonly string FirstName;
-        private readonly string? MiddleName;
+        private readonly string MiddleName;
         private readonly string SirName;
         private readonly string UserName;
         private readonly string Email;
@@ -19,7 +19,7 @@ namespace BankApp.Models
 
         public Account(string firstname, string middleName, string sirname, string email, string dob, string password, string accountType)
 		{
-			AccountId = "Todo:ReplaceWithUniqueIdentifier";
+			AccountId = Guid.NewGuid();
 			FirstName = firstname;
 			MiddleName = middleName;
 			SirName = sirname;
@@ -27,6 +27,10 @@ namespace BankApp.Models
 			Dob = dob;
 			Password = password;
 			AccountType = accountType;
-		}
-	}
+			UserName = $"{firstname}-{sirname}";
+
+            // Todo: change UserName property to something like:
+            // $"{firstname.Substring(3)}-{sirname}-{Guid.NewGuid().ToString().Substring(6)}";
+        }
+    }
 }

@@ -32,8 +32,10 @@
 
   <ItemGroup>
     <None Remove="Constants\" />
+    <None Remove="AccountService\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Constants\" />
+    <Folder Include="AccountService\" />
   </ItemGroup>
 </Project>

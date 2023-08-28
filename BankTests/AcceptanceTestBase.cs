@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Principal;
 using BankApp.DependencyInjection;
 using BankApp.Exceptions;
 using BankApp.Interfaces;
@@ -19,15 +20,13 @@ namespace BankTests
         protected IAccountService? BankAccountService;
         protected IClientService? BankClientService;
         protected IAccount? UserAccount;
-        protected CustomException? ScenarioException;
+        protected Exception? ScenarioException;
         protected int Balance { get; set; }
 
 
         [OneTimeSetUp]
         public void SetUpFixture()
         {
-
-            // Initialize your dependencies here, just once for the whole fixture.
             ServiceProvider = DependencyInjectionProvider.Setup(sc =>
             {
                 sc.AddTransient<IClientRepository>(_ => MockClientRepository.Object);
@@ -40,14 +39,13 @@ namespace BankTests
         [SetUp]
         public void SetUpTestCase()
         {
-            // Reset state before each test case
             MockClientRepository = new Mock<IClientRepository>();
             MockAccountRepository = new Mock<IAccountRepository>();
 
             BankAccountService = ServiceProvider.GetService<IAccountService>()!;
             BankClientService = ServiceProvider.GetService<IClientService>()!;
-            UserAccount = null; // Reset the UserAccount for each test case
-            ScenarioException = null; // Reset the ScenarioException for each test case
+            UserAccount = null; 
+            ScenarioException = null; 
 
             SetupMockClientRepositoryGetAccount();
         }
@@ -55,32 +53,15 @@ namespace BankTests
         public IAccount? AClientOpensANewAccount()
         {
             if (BankClientService != null)
-            { 
+            {
+                BankClientService.OpenAccount(TestConstants.FirstName, TestConstants.MiddleName, TestConstants.SirName,
+                                              TestConstants.Email, TestConstants.DateOfBirth, TestConstants.Password, TestConstants.AccountType);
+
                 return BankClientService.GetExistingAccount(TestConstants.UserName, TestConstants.Password);
             }
 
             throw new AggregateException();
         }
-
-        //public double AClientHasAnAccountWithBalanceOf(double startingBalance)
-        //{
-        //    MockAccountRepository.Setup(ar => ar.GetBalance(It.IsAny<IAccount>())).Returns(startingBalance);
-        //    double balance = 0;
-
-        //    if (BankClientService != null && BankAccountService != null)
-        //    {
-        //        UserAccount = BankClientService.GetExistingAccount(TestConstants.UserName, TestConstants.Password);
-
-        //        if (UserAccount != null)
-        //        {
-        //            balance = BankAccountService.GetBalance(UserAccount);
-        //        }
-        //    }
-
-        //    Assert.That(balance, Is.EqualTo(startingBalance));
-
-        //    return balance;
-        //}
 
         public double AClientHasAnAccountWithBalanceOf(double startingBalance)
         {
@@ -132,4 +113,3 @@ namespace BankTests
         }
     }
 }
-
